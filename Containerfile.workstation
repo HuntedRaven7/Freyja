@@ -10,10 +10,12 @@ COPY system_files/workstation/ /system_files
 COPY repos/ /repos
 
 # Base image
-FROM quay.io/fedora/fedora-bootc:45
+FROM quay.io/fedora/fedora-bootc:45 AS base
 
 FROM ghcr.io/ublue-os/akmods-zfs:${AKMODS_VERSION} AS akmods_zfs
 FROM ghcr.io/ublue-os/akmods-nvidia-open:${AKMODS_VERSION} AS akmods_nvidia_open
+
+FROM base
 
 # MODIFICATIONS
 
@@ -57,6 +59,13 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=bind,from=akmods_nvidia_open,src=/rpms,dst=/tmp/akmods-nvidia-open-rpms \
     --mount=type=tmpfs,dst=/tmp \
     /ctx/build-workstation.sh 
+
+# GAMING (Steam/Gamescope session + tools)
+RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
+    --mount=type=cache,dst=/var/cache \
+    --mount=type=cache,dst=/var/log \
+    --mount=type=tmpfs,dst=/tmp \
+    /ctx/gamer-slop.sh 
 
 # CLEANUP
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
