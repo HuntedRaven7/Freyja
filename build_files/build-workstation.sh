@@ -74,83 +74,6 @@ PACKAGES+=(
 	mesa-libEGL
 )
 
-GAMESCOPE_TERRA_PACKAGES=(
-	terra-gamescope.x86_64
-	terra-gamescope-libs.x86_64
-	terra-gamescope-libs.i686
-)
-
-GAMESCOPE_FEDORA_PACKAGES=(
-	gamescope
-	gamescope-libs.x86_64
-	gamescope-libs.i686
-)
-
-REMOVE_PACKAGES=(
-	pipewire-config-raop
-	mesa-va-drivers
-)
-
-TERRA_SWAP_PACKAGES=(
-	xorg-x11-server-Xwayland terra-xorg-x11-server-Xwayland
-	wireplumber terra-wireplumber
-)
-
-TERRA_BLUEZ_PACKAGES=(
-	terra-bluez
-	terra-bluez-libs
-	terra-bluez-obexd
-	terra-bluez-cups
-)
-
-VERSIONLOCK_PACKAGES=(
-	terra-xorg-x11-server-Xwayland
-	terra-bluez
-	mesa-dri-drivers
-	mesa-filesystem
-	mesa-libEGL
-	mesa-libGL
-	mesa-libgbm
-	mesa-vulkan-drivers
-)
-
-EXTRA_PACKAGES=(
-	mesa-libEGL.i686
-	intel-opencl
-	scx-scheds
-	scx-tools
-	bpftune
-	bpfrag
-)
-
-OPENH264_PACKAGES=(
-	openh264.x86_64
-	openh264.i686
-)
-
-GAMING_PACKAGES=(
-	gamemode.x86_64
-	gamemode.i686
-	mangohud.x86_64
-	mangohud.i686
-	vkBasalt.x86_64
-	vkBasalt.i686
-	libFAudio.x86_64
-	libFAudio.i686
-	wine
-	winetricks
-	umu-launcher
-	protontricks
-	vulkan-tools
-	mesa-vulkan-drivers.x86_64
-	mesa-vulkan-drivers.i686
-	mesa-dri-drivers.i686
-	openxr
-	openxr-libs
-	xrandr
-	xorg-x11-server-Xwayland
-)
-
 LAUNCHER_PACKAGES=(
 	steam
 )
@@ -158,26 +81,6 @@ LAUNCHER_PACKAGES=(
 if ! dnf5 -y install --skip-unavailable "${GAMESCOPE_TERRA_PACKAGES[@]}" 2>/dev/null; then
     dnf5 -y install --skip-unavailable "${GAMESCOPE_FEDORA_PACKAGES[@]}" || true
 fi
-
-dnf5 -y remove "${REMOVE_PACKAGES[@]}"
-
-dnf5 -y swap --from-repo=terra-mesa mesa-filesystem mesa-filesystem
-
-dnf5 -y swap --allowerasing --repo terra-extras ${TERRA_SWAP_PACKAGES[0]} ${TERRA_SWAP_PACKAGES[1]}
-dnf5 -y swap --allowerasing --repo terra-extras ${TERRA_SWAP_PACKAGES[2]} ${TERRA_SWAP_PACKAGES[3]}
-
-dnf5 -y install \
-    --allowerasing \
-    --repo terra-extras \
-    "${TERRA_BLUEZ_PACKAGES[@]}"
-
-dnf5 versionlock add "${VERSIONLOCK_PACKAGES[@]}"
-
-dnf5 -y install "${EXTRA_PACKAGES[@]}"
-
-dnf5 -y install --allowerasing "${OPENH264_PACKAGES[@]}"
-
-dnf5 -y install --skip-unavailable "${GAMING_PACKAGES[@]}"
 
 dnf5 -y --setopt=install_weak_deps=False install --skip-unavailable "${LAUNCHER_PACKAGES[@]}" || \
     echo "WARN: steam/lutris not installed (package source unavailable in current repos)"
